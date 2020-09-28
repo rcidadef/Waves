@@ -405,7 +405,7 @@ int main(int argc, char **argv) {
 			 doc_a_doc[nDocsBloco].doc = 2000000000 ; //std::numeric_limits<unsigned int>::max();
 			 nDocsBloco++;
 			 offsetOut+=2;
-			 /**/
+			 */
 			// Grava  todos os documentos primeiro
 			// printf("gravando %d elementos do termo %d\n",doc_a_doc.size(),term_id);
 			for (int i = 0; i < nDocsBloco; i++) {

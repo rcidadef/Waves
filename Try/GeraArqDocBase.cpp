@@ -6,23 +6,23 @@
  *      Author: jhoyce
  */
 
-#define MAX_SIZE_TEXT 1024*1024*100
+#define MAX_SIZE_TEXT 1024 * 1024 * 100
 
-#include <iostream>
 #include <algorithm>
-#include <vector>
-#include <sys/time.h>
+#include <dirent.h>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <unistd.h>
-#include <iostream>
-#include <fstream>
-#include <dirent.h>
+#include <vector>
 
 using namespace std;
 
-typedef struct {
+typedef struct
+{
 	int id_arq;
 
 	long offset_text;
@@ -41,29 +41,30 @@ typedef struct {
 	int size_outlink;
 } IDXbase;
 
-void limparString(char *string) {
+void limparString(char *string)
+{
 
 	int tamString = strlen(string);
 
-	for (int i = 0; i < tamString; i++) {
+	for (int i = 0; i < tamString; i++)
+	{
 		string[i] = ' ';
 	}
-
 }
 
 /** objetivo: Salvar a base de documentos no formato reconhecido pelo indexador ****/
 /* cria um aruivo textual para cada documento da base *****/
 /* cria um arquivo com structs IDXBase criados para cada dcoumento ***/
 /* os structs servirao para auxiliar o indexador a recuperar o conteudo no arquivo de cada doumento **/
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
 	FILE *arquivoBase, *arqText, *arquivoIndice;
-	char nomeImg[1000];
-	char palavraVisual[1000];
-	char nomeArqText[1000];
+	char nomeImg[200000];
+	char palavraVisual[200000];
+	char nomeArqText[200000];
 	char ch;
 	char espaco = ' ';
-	//ifstream sr;
 	int cont = 0;
 	string linha;
 	palavraVisual[0] = '\0';
@@ -80,40 +81,54 @@ int main(int argc, char **argv) {
 
 	//criando o arquivo onde serao salvos os structs referentes aos docs da base
 
-
-
 	int posPalavra = 0, posNomeImg = 0, qtdeImgLida = 0;
-	int qtdePalavrasLidas = 0,	posEscritaPalavra = 0, tamanhoTotalPalavra = 0;
+	int qtdePalavrasLidas = 0, tamanhoTotalPalavra = 0;
 
 	float docId = 0;
 	bool lendoNomeImg = true, lendoPalavra = false;
 
 	//------------------
-	
-	DIR *dir;
-    struct dirent *lsdir;
-    dir = opendir(argv[1]);
-	int contArq =-1;
-    /* print all the files and directories within directory */
-    while ( ( lsdir = readdir(dir) ) != NULL )
-    {
-		contArq++;
-		printf("Path: %s%s%d", argv[1],argv[2], contArq);
-		sprintf(nomeArqText, "%s%s%d", argv[1],argv[2], contArq);
-		
-        arquivoBase = fopen((char*) nomeArqText, "r");
-		cout << "path : " << nomeArqText << endl;
-			
+
+	DIR *dir = nullptr;
+	struct dirent *lsdir = nullptr;
+	dir = opendir(argv[1]);
+
+	/* print all the files and directories within directory */
+	while ((lsdir = readdir(dir)) != nullptr)
+	{
+		cout << "Element name: " << lsdir->d_name << " " << int(lsdir->d_type) << " " << lsdir->d_ino << endl;
+		if (lsdir->d_type == 4) // Is directory, so skip
+		{
+			continue;
+		}
+
+		sprintf(nomeArqText, "%s%s%s", argv[1], argv[2], lsdir->d_name);
+
+		printf("Path: %s\n", nomeArqText);
+		cout << "path: " << nomeArqText << endl;
+
+		if ((arquivoBase = fopen((char *)nomeArqText, "r")) == nullptr)
+		{
+			cout << "Failure to open: " << nomeArqText << endl;
+			exit(1);
+		}
+
 		sprintf(nomeArqText, "%sidx", argv[3]);
-		arquivoIndice = fopen(nomeArqText, "a"); //ex: /home/joyce/base_infoweb/converte_Base_Formato_Reconhecido_Indexador/YC/Base_YC_SIFT_1000_20000/idxe
-		
 
-		
+		// ex: /home/joyce/base_infoweb/converte_Base_Formato_Reconhecido_Indexador/YC/Base_YC_SIFT_1000_20000/idxe
+		if ((arquivoIndice = fopen(nomeArqText, "a")) == nullptr)
+		{
+			cout << "Failure to open: " << nomeArqText << endl;
+			exit(1);
+		}
+
 		/* lendo arquivo carcater a caracter*/
-		while ((ch = fgetc(arquivoBase)) != EOF) {
+		while ((ch = fgetc(arquivoBase)) != EOF)
+		{
 
-			if (lendoNomeImg and ch == '#') { //condicao qdo acaba de ler o nome da img
-				
+			if (lendoNomeImg and ch == '#')
+			{ //condicao qdo acaba de ler o nome da img
+
 				docId++;
 
 				//monta nome do arquivo de conteudo que sera gera gerado para o doc
@@ -133,29 +148,33 @@ int main(int argc, char **argv) {
 				limparString(nomeImg);
 				limparString(nomeArqText);
 				continue;
-			} else if (ch == '\t') {// condicao que indica que o proximo caracater eh o inicio de uma palavra
-				
+			}
+			else if (ch == '\t')
+			{ // condicao que indica que o proximo caracater eh o inicio de uma palavra
+
 				lendoPalavra = true;
 				continue;
-			} else if ((cont == 1000 || ch == ' ') and lendoPalavra == true) {//parametrizando para ler proximas palavras
-				
-				if (palavraVisual[0] == ' ' or palavraVisual[0] == '\t'	or palavraVisual[0] == '\0') {
+			}
+			else if ((cont == 1000 || ch == ' ') and lendoPalavra == true)
+			{ //parametrizando para ler proximas palavras
+
+				if (palavraVisual[0] == ' ' or palavraVisual[0] == '\t' or palavraVisual[0] == '\0')
+				{
 					continue;
 				}
-				for (int var = 0; var < strlen(palavraVisual); var++) {
-
-					if (palavraVisual[var] != ' ') {
-
+				for (char c : palavraVisual)
+				{
+					if (c != ' ')
+					{
 						//escrevendo palavra no arquivo
-						fprintf(arqText, "%c", palavraVisual[var]);
+						fprintf(arqText, "%c", c);
 
-						tamanhoTotalPalavra = tamanhoTotalPalavra
-								+ sizeof(char);
-
-					} else {
+						tamanhoTotalPalavra = tamanhoTotalPalavra + sizeof(char);
+					}
+					else
+					{
 						break;
 					}
-
 				}
 				fprintf(arqText, "%c", espaco);
 				tamanhoTotalPalavra = tamanhoTotalPalavra + sizeof(char);
@@ -165,60 +184,68 @@ int main(int argc, char **argv) {
 				cont = 0;
 				posPalavra = 0;
 				continue;
-			} else if (ch == '\n') {	//condicao quando se passa para a proxima linha do arquivo
-				
-				if (palavraVisual[0] == '\t' or palavraVisual[0] == '\0') {
+			}
+			else if (ch == '\n')
+			{ //condicao quando se passa para a proxima linha do arquivo
+
+				if (palavraVisual[0] == '\t' or palavraVisual[0] == '\0')
+				{
 					continue;
 				}
-				
+
 				//escrever ultima palavra no arquivo
-				for (int var = 0; var < strlen(palavraVisual); var++) {
+				for (char ch : palavraVisual)
+				{
+					if (ch != ' ')
+					{
+						// escrevendo palavra no arquivo
+						fprintf(arqText, "%c", ch);
 
-					if (palavraVisual[var] != ' ') {
-
-						//escrevendo palavra no arquivo
-						fprintf(arqText, "%c", palavraVisual[var]);
-
-						tamanhoTotalPalavra = tamanhoTotalPalavra
-								+ sizeof(char);
-
-					} else {
+						tamanhoTotalPalavra = tamanhoTotalPalavra + sizeof(char);
+					}
+					else
+					{
 						break;
 					}
-
 				}
-				
-				//salva valor no struct
+
+				// salva valor no struct
 				idxBase.size_text = tamanhoTotalPalavra;
 				//excreve struct no arquivo
 				fwrite(&idxBase, sizeof(idxBase), 1, arquivoIndice);
-				//fecha arqText
-				fclose(arqText);
+				// fecha arqText
+				if (arqText)
+				{
+					fclose(arqText);
+					arqText = nullptr;
+				}
 				qtdeImgLida++;
 				lendoPalavra = false;
 				lendoNomeImg = true;
 				limparString(palavraVisual);
 				posPalavra = 0;
 				tamanhoTotalPalavra = 0;
-				
-				continue;
 
+				continue;
 			}
 
 			//lendo caracteres para formar o nome da img
-			if (lendoNomeImg == true) {
+			if (lendoNomeImg == true)
+			{
 
-				if (ch == ' ' or ch == '\t' or ch == '\0') {
+				if (ch == ' ' or ch == '\t' or ch == '\0')
+				{
 					continue;
 				}
 				nomeImg[posNomeImg] = ch;
 				posNomeImg = posNomeImg + 1;
-
 			}
 
 			//lendo caracteres para formar a palavra
-			if (lendoPalavra == true) {
-				if (ch == ' ' or ch == '\t' or ch == '\0') {
+			if (lendoPalavra == true)
+			{
+				if (ch == ' ' or ch == '\t' or ch == '\0')
+				{
 					continue;
 				}
 				cont++;
@@ -226,20 +253,16 @@ int main(int argc, char **argv) {
 				palavraVisual[posPalavra] = ch;
 				posPalavra = posPalavra + 1;
 			}
-
 		}
 
 		fclose(arquivoBase);
 		fclose(arquivoIndice);
 	}
-	
-	
-    closedir(dir);
+
+	closedir(dir);
 
 	printf("Qtde Imgs Lidas: %d ", qtdeImgLida);
 	printf("Qtde Palavras Lidas: %d ", qtdePalavrasLidas);
 
-	return (0);
-
+	return 0;
 }
-

@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 		}else if(term[t] == -9){
 			break;
 		}
-		/**/
+		*/
 
 		fread( &idx, sizeof(IDX), 1, fidx );
 		if(feof(fidx))	break;
@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 		idx_fracao2.freq_tam_lista = 0;
 
 
-		if(idx.freq_tam_lista == 0  /**|| term_id != termos_[listId]/**/)
+		if(idx.freq_tam_lista == 0/* || term_id != termos_[listId] */)
 		{
 			
 			fwrite(&idx_fracao1, sizeof(IDX), 1, fidx_fracao1);
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
 		/**
 		t=5;
 		
-		/**/
+		*/
 		///==============================================
 		//if(term_id == 10 ) break;///Parada para teste
 		///==============================================
