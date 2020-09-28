@@ -7,8 +7,8 @@ extern unsigned int mm;
 extern unsigned int total_clock;
 
 #include <limits>
-#include "../../libs-iw/indexer/include/IndiceInvertido.h"
-#include "../../libs-iw/indexer/include/prefixinmem.h"
+#include "IndiceInvertido.h"
+#include "prefixinmem.h"
 
 typedef struct doc {
     unsigned int tf;

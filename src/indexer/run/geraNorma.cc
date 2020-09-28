@@ -3,7 +3,6 @@
 #include <math.h>
 #include <vector>
 #include <iostream>
-#include <fstream>
 #include <algorithm>
 #include <list>
 #include "IndiceInvertido.h"
@@ -36,7 +35,7 @@ void Inicializa(long _tam_lista, char *arq, long inicio)
 		fp = fopen( arq, "rb");
 	}
 
-	fseek( fp, inicio, SEEK_SET);
+	fseek(fp, inicio, SEEK_SET);
 
 	if(_tam_lista*2 > SIZE_BUFFER_LEITOR_LISTA+5)
 		fread(buffer, sizeof(_tipo_buffer), SIZE_BUFFER_LEITOR_LISTA+5, fp);
@@ -88,64 +87,41 @@ typedef struct post { //Struct da Lista Invertida ordenada por Documento
 int main(int argc, char **argv)
 {
 	long offset;
-	//unsigned int num_docs_colecao = (unsigned int) atoi( argv[2] );
-	int nl=0,nw=0;
-	tPost doc_a_doc[1024];
-	int nDocsBloco;
-	tPost currPost;
-	FILE *ftermo_out=NULL;
-	unsigned int doc_gap;
-	_tipo_buffer *out_freq;
-	unsigned char btat_freq;
+	unsigned int num_docs_colecao = (unsigned int) atoi( argv[2] );
 
-	_tipo_buffer *buffer_lista_freq = new _tipo_buffer[SIZE_BUFFER_LEITOR_LISTA+SIZE_FOLGA_LEITOR_LISTA];
-
-	//float *normas = (float*)malloc(sizeof(float)*num_docs_colecao);
-	//memset( normas, 0, num_docs_colecao*sizeof(float) );
+	float *normas = (float*)malloc(sizeof(float)*num_docs_colecao);
+	memset( normas, 0, num_docs_colecao*sizeof(float) );
 
 
 
-	if(argc!=2)
+	if(argc!=4)
 	{
-		printf("Execute\n\t%s <path_indice> \n", argv[0]);
+		printf("Execute\n\t%s <path_indice> <num_doc_colecao> <1->Vetorial; 2->BM25>\n", argv[0]);
 		exit(1);
 	}
 
-	//int tipo_norma = atoi(argv[3]);
+	int tipo_norma = atoi(argv[3]);
 	time_t start = time(NULL);
 
 
 	FILE *fidx = NULL;
 	FILE *fidf = NULL;
-	FILE *fdocs = NULL;
-	FILE *ffreqs = NULL;
-	float pre;
-	int totalNDocs;
+	FILE *fnorma = NULL;
 	IDX idx;
 	int term_id = 0;
 
-	int id_arq_ant = -1;
 	char arq[4096];
-	int salto, total, num_doc;
+	int num_doc;
 	_tipo_buffer docid=0;
-	_tipo_buffer ultdocid=0;
 
-	int k;
 	LeitorLista leitor;
 	unsigned int doc, freq=0, bitoffset=0;
 
 
-	sprintf(arq, "%s%s", argv[1], "docs.dat");
-	if((fdocs = fopen( arq, "w" )) == NULL )
+	sprintf(arq, "%s%s", argv[1], NOME_NORMA);
+	if((fnorma = fopen( arq, "wb" )) == NULL )
 	{
-		printf("gera_IndicesR::Impossivel criar o arquivo de docs.dat: (%s)\n", arq );
-		exit(1);
-	}
-	
-	sprintf(arq, "%s%s", argv[1], "freqs.dat");
-	if((ffreqs = fopen( arq, "w" )) == NULL )
-	{
-		printf("gera_IndicesR::Impossivel criar o arquivo de docs.dat: (%s)\n", arq );
+		printf("gera_normas::Impossivel criar o arquivo de normas: (%s)\n", arq );
 		exit(1);
 	}
 
@@ -156,81 +132,103 @@ int main(int argc, char **argv)
 		printf("Nao foi possivel abrir o arquivo de idx %s\n", arq);
 		exit(1);
 	}
-	
-	/*
-	SimpleWBRQueryParser simple_query_parser;
 
-	string vocabulario ( "./1M/govTxt." );
-    Vocabulario *voc = new Vocabulario(10000, 5000, (char*)vocabulario.c_str(), 2);
-	
-	cout<<"\n\n IMPRIME VOCABULARIO-------\n\n"<<endl;
-	printHashPrincipal();
-	cout<<"\n\n IMPRIME VOCABULARIO-------\n\n"<<endl;
-	*/
-	
 	size_t size;
 	float *vetIdf;
 
-	unsigned *ft;
 	FILE *fft;
 
-	
+	if(true || tipo_norma != 1) {
+		sprintf(arq, "%s%s", argv[1], NOME_IDF);
+		if((fidf = fopen(arq, "r+")) == NULL)
+		{
+			printf("Nao foi possivel abrir o arquivo de idf %s\n", arq);
+			exit(1);
+		}
+
+		sprintf(arq, "%s%s", argv[1], "FT");
+		if((fft = fopen(arq, "w+")) == NULL)
+		{
+			printf("Nao foi possivel criar o arquivo de norma %s\n", arq);
+			exit(1);
+		}
+
+		fseek(fidf, 0, SEEK_END);
+		size = ftell(fidf)/sizeof(float);
+		vetIdf = new float[size];
+		fseek(fidf, 0, SEEK_SET);
+		fread(vetIdf, size, sizeof(float), fidf);
+		fclose(fidf);
+	}
+
 	int nTerms =0;
-	vector<int> *documentos = new vector<int>();
-	vector<int> *frequencias = new vector<int >();
-	int nDocs =0;
 
 	do{
 
-		doc_gap= 0; 
-		nDocsBloco = 0;
+
 		fread( &idx, sizeof(IDX), 1, fidx );
 		if(feof(fidx))	break;
+
+
 
 		if(idx.freq_tam_lista == 0)
 		{
 			term_id++;
 			continue;
 		}
-
+		fwrite(&idx.freq_tam_lista,sizeof(unsigned),1,fft); 
 		nTerms++;
+		
 		/*Abre o arquivo de listas de frequencia*/
 		sprintf( arq, "%s%s%d", argv[1], NOME_FREQUENCIA, idx.id_arq );
 		leitor.Inicializa(idx.freq_tam_lista, arq, idx.freq_inicio_termo);
 
-		docid =0;
-		documentos = new vector<int>();
-		while(leitor.getDoc(&doc, &freq, &offset, &bitoffset)){
-			
-			
-			if(doc != 0)
-			{
-				docid += doc;
-				
-				documentos->push_back(freq);
-				frequencias->push_back(freq);
-			}
+		if(leitor.getDoc(&docid, &freq, &offset, &bitoffset)) {
+			num_doc++;
 		}
-		
-	/***
-		cout << documentos->size(); 
-		for(vector<int>::iterator it = documentos->begin(); it!= documentos->end(); it++) {
-			cout<< " "<< *it;
+		else {
+			printf("erro de leitura, primeiro decodificado vazio\n");
+			exit(1);
 		}
-		delete(documentos);	
-		cout<<endl;
+		if(tipo_norma == 1)
+		{
+			/*UTI*/
+			normas[ docid ] += vetIdf[term_id] * vetIdf[term_id] * freq * freq;		//Vetorial
+		}
+		else
+		{
+			normas[docid]+=freq;
+		}
 
-		
-	/***/	
-		
-			   
+		while(leitor.getDoc(&doc, &freq, &offset, &bitoffset))
+		{
+			if(doc != 0){
+				docid += doc;
+				if(tipo_norma == 1){
+					
+					normas[docid] += vetIdf[term_id] * vetIdf[term_id] * freq * freq;		//Vetorial
+				}
+				else{
+					normas[docid]+=freq;
+				}
+			}
+		}	   
 		term_id++;
 
 	}while(1);
+
 	
-	cout<<" N- term : "<<term_id<<endl;
 
 
+	//fwrite( normas, sizeof(float), num_docs_colecao, fnorma );
+	
+	printf("Numero de termos =  %d\n", nTerms);
+	printf("Norma gerada em %.2lf \n", difftime(time(NULL), start)/60);
+	fwrite( normas, sizeof(float), num_docs_colecao, fnorma );
+
+	free(normas);
+	fclose(fft);
+	if(tipo_norma==1)	delete vetIdf;
 	return 0;
 }
 
