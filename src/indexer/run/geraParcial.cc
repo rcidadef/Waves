@@ -4,13 +4,13 @@
 #include "Vocabulario.h"
 #include "parse_query.h"
 #include "valstringuniao_utf8.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <time.h>
 #include <unordered_map>
-#include <algorithm>
 #include <vector>
 
 #define MAX_TERMOS 10000000

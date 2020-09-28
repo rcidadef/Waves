@@ -64,16 +64,16 @@ endif ( NOT DEFINED BUILD_SHARED_LIBS )
 
 # Set installation flags
 set (CMAKE_C_FLAGS "-Wall -O2 -I /usr/local/lib -Wno-deprecated -pthread ")
-set (CMAKE_CXX_FLAGS "-Wall -O2 -I /usr/local/lib -lm -Wno-deprecated -pthread ")
+set (CMAKE_CXX_FLAGS "-Wall -O2 -I /usr/local/lib -lm -Wno-deprecated -pthread -fsanitize=address")
 
-set (CMAKE_C_FLAGS_DEBUG " -O2 -g -I /usr/local/lib  -Wno-deprecated -pthread ")
+set (CMAKE_C_FLAGS_DEBUG " -O2 -g -I /usr/local/lib -Wno-deprecated -pthread ")
 set (CMAKE_CXX_FLAGS_DEBUG " -O2 -g -I /usr/local/lib -Wno-deprecated -pthread ")
 
-set (CMAKE_C_FLAGS_RELEASE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -I /usr/local/lib  -Wno-deprecated -pthread ")
-set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -DNDEBUG  -DDISABLE_LOG_DEBUG -I /usr/local/lib  -Wno-deprecated -pthread ")
+set (CMAKE_C_FLAGS_RELEASE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -I /usr/local/lib -Wno-deprecated -pthread ")
+set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -DNDEBUG  -DDISABLE_LOG_DEBUG -I /usr/local/lib -Wno-deprecated -pthread ")
 
-set (CMAKE_C_FLAGS_RELEASETUNE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -march=native -mtune=native -I /usr/local/lib  -Wno-deprecated -pthread ")
-set (CMAKE_CXX_FLAGS_RELEASETUNE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -march=native -mtune=native -I /usr/local/lib  -Wno-deprecated -pthread ")
+set (CMAKE_C_FLAGS_RELEASETUNE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -march=native -mtune=native -I /usr/local/lib -Wno-deprecated -pthread ")
+set (CMAKE_CXX_FLAGS_RELEASETUNE "-Wall -O2 -DNDEBUG -DDISABLE_LOG_DEBUG -march=native -mtune=native -I /usr/local/lib -Wno-deprecated -pthread ")
 
 # Add an "profile" build type
 SET(CMAKE_CXX_FLAGS_PROFILE "-pg" CACHE STRING

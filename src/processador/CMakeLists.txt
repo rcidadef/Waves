@@ -1,27 +1,23 @@
-cmake_minimum_required (VERSION 2.4)
-project (queryProcessor)
+set(SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/Index.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/PostingList.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/PreProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser/valstringuniao.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/ConfigFile.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/auxFunctions.cc
+)
 
-include("${${PROJECT_NAME}_SOURCE_DIR}/globalVariables.cmake")
+add_library( query_processor ${SRC})
+target_include_directories(query_processor PUBLIC
+    ${CMAKE_SOURCE_DIR}/include/indexer
+    ${CMAKE_SOURCE_DIR}/include/processador
+    ${CMAKE_SOURCE_DIR}/include/utils)
 
-#set(CMAKE_CXX_FLAGS "--coverage -fprofile-dir=/home/thomaz/Documentos/trabalho/codigoTrabalho/processador/build/Debug/")
-#set(CMAKE_SHARED_LINKER_FLAGS "--coverage -fprofile-dir=/home/thomaz/Documentos/trabalho/codigoTrabalho/processador/build/Debug/")
+add_executable(queryProcessor ${CMAKE_CURRENT_SOURCE_DIR}/run/queryProcessor.cpp)
+target_link_libraries(queryProcessor query_processor)
 
-set(CMAKE_CXX_FLAGS "--coverage")
-set(CMAKE_SHARED_LINKER_FLAGS "--coverage")
+add_executable(gerarIndice ${CMAKE_CURRENT_SOURCE_DIR}/run/geraR_Indice.cc)
+target_link_libraries(gerarIndice query_processor)
 
-include_directories(${INCLUDES})
-
-link_directories(${LIBS})
-
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-
-add_subdirectory(src)
-
-add_executable(QueryProcessor src/run/queryProcessor.cpp)
-target_link_libraries (QueryProcessor libQueryProcessor rt -fprofile-arcs)
-
-add_definitions(-O2 )
-
-
+include ( ${CMAKE_SOURCE_DIR}/cmake/install.cmake )
