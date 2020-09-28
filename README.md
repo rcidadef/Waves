@@ -1,19 +1,25 @@
 # Waves
 
-#Format of the documents collection..
+# Format of the documents collection..
+
 	
 	2121 # 	 palavra1 palavra2 
 	<docName><space><hashtag><tab><word1><space><word2>...
 	->See examples in Try/GovTxtTeste/00
 	
-#Indexer
-	Build:
+
+# Indexer
+
+Build:
+
 		1. cd Indexer
 		2. mkdir build
 		3. cd build
 		4. cmake ..
 		5. make
-	 After that you will have the following runnable files:
+
+After that you will have the following runnable files:
+
 		./geraParcial
 		./mergeParcial
 		./geraIndiceFrequencia
@@ -22,21 +28,29 @@
 		./GeraDistribuicao (To check the threshold value related to a percentage.)
 		./SplitIndex  (To split the index)
 	
-#QueryProcessor
-	Build:
+
+# QueryProcessor
+
+Build:
+
 		1. cd processador
 		2. mkdir build
 		3. cd build
 		4. cmake ..
 		5. make
-	After that you will have the following runnable files:
+
+After that you will have the following runnable files:
+
 		./queryProcessor
 	
-### Try the Query Processor ###
+
+### Try the Query Processor
 
 1. Build the Indexer and the QueryProcessor.
 2. Copy all runnable files to ./Try/
+
 #
+
 	[queryProcessor,
 	geraParcial,
 	mergeParcial,
@@ -46,7 +60,9 @@
 	GeraDistribuicao,
 	SplitIndex]
 	
+
  
+
 3. To index the documents and to split the index.
 
 	I.  $: cd Try/
@@ -66,7 +82,7 @@
 	 
 	   
 	  
+
 4. To process queries. (To view the generated ranking open the <file.result> )
 
 		./QueryProcessor configFile
-
