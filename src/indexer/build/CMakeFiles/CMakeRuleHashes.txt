@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-31ac68d99e5fd15f1959bba2c6d3a104 CMakeFiles/doc
-53cc5d94240abfcd036acfcdc7b809e1 doc/indexer.doxyfile

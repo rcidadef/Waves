@@ -1,1 +1,0 @@
-/usr/bin/g++-10  -Wall   -O2 -I /usr/local/lib -lm -Wno-deprecated -pthread    -O2 -g -I /usr/local/lib -Wno-deprecated -pthread   -rdynamic CMakeFiles/geraSkiplistBlockMaxFIX.dir/run/geraSkiplistBlockMaxFIX.o  -o geraSkiplistBlockMaxFIX  -Wl,-rpath,/home/rcidadef/repos/Waves/Waves/indexer/build/src libindexer.so 
