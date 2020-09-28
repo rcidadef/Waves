@@ -1,0 +1,1 @@
+/usr/bin/g++-10  -Wall   -O2 -I /usr/local/lib -lm -Wno-deprecated -pthread    -O2 -g -I /usr/local/lib -Wno-deprecated -pthread   -rdynamic CMakeFiles/geraIndiceFrequencia.dir/run/geraIndiceFrequencia.o  -o geraIndiceFrequencia  -Wl,-rpath,/home/rcidadef/repos/Waves/Waves/indexer/build/src libindexer.so 
