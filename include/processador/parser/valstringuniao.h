@@ -5,26 +5,28 @@
 #ifndef VALSTRINGUNIAO_H
 #define VALSTRINGUNIAO_H
 
+#include <ctype.h>
 
-#include<ctype.h>
+namespace processor
+{
+
 #ifndef ValidCh
 
- #define ValidCh(ch)  (isalnum(ch))
- #define InvalidCh(ch) (!ValidCh(ch))
+#define ValidCh(ch) (isalnum(ch))
+#define InvalidCh(ch) (!ValidCh(ch))
 
 #endif
 
-extern char  _IsNum[256];
-extern char  _Valid[256];
-extern char  _Invalid[256];
-extern unsigned char  convertWithAccent[256];
-extern unsigned char  convertWithoutAccent[256];
-extern unsigned char _ShouldConvert;
+    extern char _IsNum[256];
+    extern char _Valid[256];
+    extern char _Invalid[256];
+    extern unsigned char convertWithAccent[256];
+    extern unsigned char convertWithoutAccent[256];
+    extern unsigned char _ShouldConvert;
 
-void startConvertWithoutAccent();
-void startValid();
+    void startConvertWithoutAccent();
+    void startValid();
+
+} // namespace processor
 
 #endif
-
-
-

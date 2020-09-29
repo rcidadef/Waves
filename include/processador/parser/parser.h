@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Vocabulario.h"
-#include "valstringuniao.h"
 #define WORD_SIZE 30
 
 class Parser{

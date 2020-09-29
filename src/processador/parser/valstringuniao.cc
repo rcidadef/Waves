@@ -1,5 +1,7 @@
 #include "valstringuniao.h"
 
+namespace processor {
+
 char  _IsNum[256];
 char  _Valid[256];
 char  _Invalid[256];
@@ -221,5 +223,7 @@ void startConvertWithoutAccent() {
   convertWithoutAccent[253] = 121;
   convertWithoutAccent[254] = 254;
   convertWithoutAccent[255] = 121; 
+
+}
 
 }

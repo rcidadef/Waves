@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "valstringuniao.h"
 
 int* Parser::parseQuery(const char *_query, Vocabulario *_vocabulary, int *_numberOfTerms) {
     unsigned int k;
@@ -15,7 +16,7 @@ int* Parser::parseQuery(const char *_query, Vocabulario *_vocabulary, int *_numb
 
     while(*_query) {
         charBase = *_query;
-        c =  convertWithoutAccent[(unsigned char) charBase];
+        c =  processor::convertWithoutAccent[(unsigned char) charBase];
         if(isalnum(c)) {
             if(k < WORD_SIZE) {
                 pal[k] = tolower(c);
